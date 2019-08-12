@@ -1,11 +1,11 @@
 # ===========================================================================
-# (c) Copyright IBM Corp. 2017, 2018 All Rights Reserved
+# (c) Copyright IBM Corp. 2017, 2019 All Rights Reserved
 # ===========================================================================
 # This code is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 only, as
 # published by the Free Software Foundation.
 #
-# IBM designates this particular file as subject to the "Classpath" exception 
+# IBM designates this particular file as subject to the "Classpath" exception
 # as provided by IBM in the LICENSE file that accompanied this code.
 #
 # This code is distributed in the hope that it will be useful, but WITHOUT
@@ -42,6 +42,5 @@ TOP_SRC_DIRS += \
 # modules specific to OpenJ9 will be found and included in that set.
 
 ifneq (,$(findstring create-main-targets-include,$(MAKECMDGOALS)))
-BUILD_OPENJ9_TOOLS     := $(shell $(MAKE) -C $(TOPDIR)/closed -f OpenJ9.gmk SPEC=$(SPEC) BOOT_JDK=$(BOOT_JDK) build-openj9-tools)
 GENERATE_J9JCL_SOURCES := $(shell $(MAKE) -C $(TOPDIR)/closed -f OpenJ9.gmk SPEC=$(SPEC) generate-j9jcl-sources)
 endif
