@@ -63,6 +63,9 @@ override MAKEFLAGS := \
 		$(wordlist 2,$(words $(MAKEFLAGS)),$(MAKEFLAGS)) \
 	)
 
+# Add parallel option, if appropriate.
+CHILD_MFLAGS := $(MFLAGS)$(if $(JOBS), -j $(JOBS))
+
 # Propagate configure option '--disable-warnings-as-errors-omr' to OMR.
 ifeq (false,$(WARNINGS_AS_ERRORS_OMR))
   OMR_EXTRA_CONFIGURE_ARGS := --disable-warnings-as-errors
@@ -384,7 +387,7 @@ stage-openj9-tools :
 
 build-openj9-tools : stage-openj9-tools
 	@$(ECHO) Building OpenJ9 Java Preprocessor
-	$(MAKE) -C $(OUTPUTDIR)/vm/sourcetools -f buildj9tools.mk \
+	$(MAKE) -C $(OUTPUTDIR)/vm/sourcetools $(CHILD_MFLAGS) -f buildj9tools.mk \
 		BOOT_JDK=$(BOOT_JDK) lib/jpp.jar
 
 stage-j9 : stage-openj9-tools
@@ -454,7 +457,7 @@ run-preprocessors-j9 : stage-j9 \
 	@$(ECHO) Running OpenJ9 preprocessors with OPENJ9_BUILDSPEC: $(OPENJ9_BUILDSPEC)
 	export BOOT_JDK=$(BOOT_JDK) $(EXPORT_MSVS_ENV_VARS) \
 		OPENJDK_VERSION_NUMBER_FOUR_POSITIONS=$(VERSION_NUMBER_FOUR_POSITIONS) \
-		&& $(MAKE) -C $(OUTPUTDIR)/vm -f buildtools.mk \
+		&& $(MAKE) -C $(OUTPUTDIR)/vm $(CHILD_MFLAGS) -f buildtools.mk \
 			BUILD_ID=$(BUILD_ID) \
 			CMAKE=$(CMAKE) \
 			EXTRA_CONFIGURE_ARGS=$(OMR_EXTRA_CONFIGURE_ARGS) \
@@ -472,10 +475,10 @@ build-j9 : run-preprocessors-j9
 	@$(ECHO) Compiling OpenJ9 in $(OUTPUTDIR)/vm
 ifeq (true,$(OPENJ9_ENABLE_CMAKE))
 	export OPENJ9_BUILD=true $(EXPORT_MSVS_ENV_VARS) $(CUSTOM_COMPILER_ENV_VARS) \
-		&& $(MAKE) -C $(OUTPUTDIR)/vm/build install
+		&& $(MAKE) -C $(OUTPUTDIR)/vm/build $(CHILD_MFLAGS) install
 else
 	export OPENJ9_BUILD=true $(EXPORT_NO_USE_MINGW) $(EXPORT_MSVS_ENV_VARS) $(CUSTOM_COMPILER_ENV_VARS) \
-		&& $(MAKE) -C $(OUTPUTDIR)/vm all
+		&& $(MAKE) -C $(OUTPUTDIR)/vm $(CHILD_MFLAGS) all
 endif
 	@$(ECHO) OpenJ9 compile complete
 
