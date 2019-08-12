@@ -58,7 +58,8 @@ endif
 # OpenJDK uses '-r' and '-R' options (no built-in rules or variables,
 # respectively) which are incompatible with OpenJ9 and OMR: replace
 # with parallel jobs option, if appropriate.
-override MAKEFLAGS := $(if $(JOBS),-j $(JOBS))
+# TODO Fix OpenJ9 and OMR makefiles so they're compatible with '-r' and '-R'.
+override MAKEFLAGS := $(if $(JOBS),-j $(JOBS),$(if $(SPEC_JOBS),-j $(SPEC_JOBS)))
 
 # Propagate configure option '--disable-warnings-as-errors-omr' to OMR.
 ifeq (false,$(WARNINGS_AS_ERRORS_OMR))
