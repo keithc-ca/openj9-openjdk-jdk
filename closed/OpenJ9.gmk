@@ -55,8 +55,13 @@ ifeq (,$(OPENJ9OMR_SHA))
   $(error Could not determine OMR SHA)
 endif
 
-# openjdk makeflags don't work with openj9/omr native compiles; override with number of CPUs which openj9 and omr need supplied
-override MAKEFLAGS := -j $(JOBS)
+# OpenJDK uses '-r' and '-R' options (no built-in rules or variables, respectively)
+# which are incompatible with OpenJ9 and OMR: remove those options from MAKEFLAGS.
+override MAKEFLAGS := \
+	$(strip \
+		$(subst R,,$(subst r,,$(firstword $(MAKEFLAGS)))) \
+		$(wordlist 2,$(words $(MAKEFLAGS)),$(MAKEFLAGS)) \
+	)
 
 # Propagate configure option '--disable-warnings-as-errors-omr' to OMR.
 ifeq (false,$(WARNINGS_AS_ERRORS_OMR))
@@ -379,7 +384,7 @@ stage-openj9-tools :
 
 build-openj9-tools : stage-openj9-tools
 	@$(ECHO) Building OpenJ9 Java Preprocessor
-	$(MAKE) -C $(OUTPUTDIR)/vm/sourcetools $(MAKEFLAGS) -f buildj9tools.mk \
+	$(MAKE) -C $(OUTPUTDIR)/vm/sourcetools -f buildj9tools.mk \
 		BOOT_JDK=$(BOOT_JDK) lib/jpp.jar
 
 stage-j9 : stage-openj9-tools
@@ -449,7 +454,7 @@ run-preprocessors-j9 : stage-j9 \
 	@$(ECHO) Running OpenJ9 preprocessors with OPENJ9_BUILDSPEC: $(OPENJ9_BUILDSPEC)
 	export BOOT_JDK=$(BOOT_JDK) $(EXPORT_MSVS_ENV_VARS) \
 		OPENJDK_VERSION_NUMBER_FOUR_POSITIONS=$(VERSION_NUMBER_FOUR_POSITIONS) \
-		&& $(MAKE) -C $(OUTPUTDIR)/vm $(MAKEFLAGS) -f buildtools.mk \
+		&& $(MAKE) -C $(OUTPUTDIR)/vm -f buildtools.mk \
 			BUILD_ID=$(BUILD_ID) \
 			CMAKE=$(CMAKE) \
 			EXTRA_CONFIGURE_ARGS=$(OMR_EXTRA_CONFIGURE_ARGS) \
@@ -467,10 +472,10 @@ build-j9 : run-preprocessors-j9
 	@$(ECHO) Compiling OpenJ9 in $(OUTPUTDIR)/vm
 ifeq (true,$(OPENJ9_ENABLE_CMAKE))
 	export OPENJ9_BUILD=true $(EXPORT_MSVS_ENV_VARS) $(CUSTOM_COMPILER_ENV_VARS) \
-		&& $(MAKE) -C $(OUTPUTDIR)/vm/build $(MAKEFLAGS) install
+		&& $(MAKE) -C $(OUTPUTDIR)/vm/build install
 else
 	export OPENJ9_BUILD=true $(EXPORT_NO_USE_MINGW) $(EXPORT_MSVS_ENV_VARS) $(CUSTOM_COMPILER_ENV_VARS) \
-		&& $(MAKE) -C $(OUTPUTDIR)/vm $(MAKEFLAGS) all
+		&& $(MAKE) -C $(OUTPUTDIR)/vm all
 endif
 	@$(ECHO) OpenJ9 compile complete
 
