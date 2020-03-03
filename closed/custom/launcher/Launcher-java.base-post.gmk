@@ -1,5 +1,5 @@
 # ===========================================================================
-# (c) Copyright IBM Corp. 2018, 2020 All Rights Reserved
+# (c) Copyright IBM Corp. 2020, 2020 All Rights Reserved
 # ===========================================================================
 # This code is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 only, as
@@ -18,10 +18,8 @@
 # 2 along with this work; if not, see <http://www.gnu.org/licenses/>.
 # ===========================================================================
 
-$(warning Launcher-jdk.jcmd-post.gmk: TARGETS = $(TARGETS))
-$(error Launcher-jdk.jcmd-post.gmk: TARGETS includes $(findstring jinfo,$(TARGETS)))
+$(error java.base: TARGETS = $(TARGETS))
+# It seems this file is not used.
 
-TARGETS := $(filter-out $(jcmd) $(jinfo) %/jinfo.1 $(jmap) $(jps) $(jstack) $(jstat),$(TARGETS))
-
-# TARGETS += $(COPY_MAN_PAGES)
-# Omit man pages for launchers not implemented by OpenJ9
+# It isn't helpful to include man pages for launchers we don't have.
+# TARGETS := $(filter-out %/jfr.1,$(TARGETS))
