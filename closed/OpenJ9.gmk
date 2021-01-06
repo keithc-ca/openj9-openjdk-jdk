@@ -90,8 +90,7 @@ ifeq (windows,$(OPENJDK_TARGET_OS))
   UnixPath = $(shell $(PATHTOOL) -u $1)
   # set Visual Studio environment
   # wrap PATH in quotes as it contains spaces (unix path)
-  # INCLUDE, LIB are already wrapped in quotes (windows paths)
-  EXPORT_MSVS_ENV_VARS := PATH="$(PATH)" INCLUDE=$(INCLUDE) LIB=$(LIB)
+  EXPORT_MSVS_ENV_VARS := PATH="$(PATH)"
 else
   UnixPath = $1
   EXPORT_MSVS_ENV_VARS :=
