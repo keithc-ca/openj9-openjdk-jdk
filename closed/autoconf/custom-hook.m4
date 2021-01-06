@@ -156,10 +156,6 @@ AC_DEFUN([OPENJ9_CONFIGURE_COMPILERS],
   AC_SUBST(OPENJ9_CC)
   AC_SUBST(OPENJ9_CXX)
   AC_SUBST(OPENJ9_DEVELOPER_DIR)
-
-  # openjdk no longer makes these available for substitutions, but our custom-spec.gmk still needs them
-  AC_SUBST(VS_INCLUDE)
-  AC_SUBST(VS_LIB)
 ])
 
 AC_DEFUN([OPENJ9_CONFIGURE_CUDA],
@@ -533,6 +529,13 @@ AC_DEFUN_ONCE([CUSTOM_LATE_HOOK],
     AC_SUBST([OPENJ9_TOOL_DIR])
     OPENJ9_GENERATE_TOOL_WRAPPERS
     AC_CONFIG_FILES([$OUTPUTDIR/toolchain-win.cmake:$CLOSED_AUTOCONF_DIR/toolchain-win.cmake.in])
+
+    # We used to rely on VS_INCLUDE and VS_LIB directly, but those are no longer available
+    # for substitutions, and they're not Windows-style paths: Convert them for our use.
+    OPENJ9_VS_INCLUDE=`$PATHTOOL -p -w "$VS_INCLUDE"`
+    OPENJ9_VS_LIB=`$PATHTOOL -p -w "$VS_LIB"`
+    AC_SUBST(OPENJ9_VS_INCLUDE)
+    AC_SUBST(OPENJ9_VS_LIB)
   fi
 ])
 
