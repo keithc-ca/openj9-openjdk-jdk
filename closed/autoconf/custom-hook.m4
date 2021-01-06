@@ -156,6 +156,10 @@ AC_DEFUN([OPENJ9_CONFIGURE_COMPILERS],
   AC_SUBST(OPENJ9_CC)
   AC_SUBST(OPENJ9_CXX)
   AC_SUBST(OPENJ9_DEVELOPER_DIR)
+
+  # openjdk no longer makes these available for substitutions, but our custom-spec.gmk still needs them
+  AC_SUBST(VS_INCLUDE)
+  AC_SUBST(VS_LIB)
 ])
 
 AC_DEFUN([OPENJ9_CONFIGURE_CUDA],
