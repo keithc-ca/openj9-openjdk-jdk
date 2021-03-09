@@ -42,6 +42,7 @@ AC_DEFUN_ONCE([CUSTOM_EARLY_HOOK],
   OPENJ9_CONFIGURE_COMPILERS
   OPENJ9_CONFIGURE_CUDA
   OPENJ9_CONFIGURE_DDR
+  OPENJ9_CONFIGURE_HEALTHCENTER
   OPENJ9_CONFIGURE_NUMA
   OPENJ9_CONFIGURE_WARNINGS
   OPENJ9_CONFIGURE_JITSERVER
@@ -265,6 +266,34 @@ AC_DEFUN([OPENJ9_CONFIGURE_DDR],
   fi
 
   AC_SUBST(OPENJ9_ENABLE_DDR)
+])
+
+AC_DEFUN([OPENJ9_CONFIGURE_HEALTHCENTER],
+[
+  HEALTHCENTER_JAR=
+  AC_ARG_WITH(healthcenter-jar, [AS_HELP_STRING([--with-healthcenter-jar], [import healthcenter artifacts from this archive])],
+    [
+      healthcenter_jar="$with_healthcenter_jar"
+      if test "x$with_healthcenter_jar" != xno ; then
+        UTIL_FIXUP_PATH(healthcenter_jar)
+        AC_MSG_CHECKING([healthcenter])
+        if ! test -f "$healthcenter_jar" ; then
+          AC_MSG_ERROR([healthcenter archive not found at $with_healthcenter_jar])
+        else
+          if test "x$OPENJDK_BUILD_OS_ENV" = xwindows.cygwin ; then
+            # UTIL_FIXUP_PATH yields a Unix-style path, but we need a mixed-mode path
+            healthcenter_jar="`$CYGPATH -m $healthcenter_jar`"
+          fi
+          if test "$healthcenter_jar" = "$with_healthcenter_jar" ; then
+            AC_MSG_RESULT([$with_healthcenter_jar])
+          else
+            AC_MSG_RESULT([$with_healthcenter_jar @<:@$healthcenter_jar@:>@])
+          fi
+          HEALTHCENTER_JAR=$healthcenter_jar
+        fi
+      fi
+    ])
+  AC_SUBST(HEALTHCENTER_JAR)
 ])
 
 AC_DEFUN([OPENJ9_PLATFORM_EXTRACT_VARS_FROM_CPU],
